@@ -1,0 +1,20 @@
+{% extends 'base.template.html' %}
+
+{% block content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    {% for customer in all_customers %}
+    <tr>
+        <td>{{customer.first_name}}</td>
+        <td>{{customer.last_name}}</td>
+        <td>{{customer.email}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
