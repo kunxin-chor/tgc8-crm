@@ -9,6 +9,20 @@ with open('customers.json') as fp:
     database = json.load(fp)
 
 
+# returns the customer by a required customer_id
+# if no customer with that id, return None
+def find_customer_by_id(customer_id):
+    for customer in database:
+        if customer["id"] == customer_id:
+            return customer
+    return None
+
+
+def save_database():
+    with open('customers.json', 'w') as fp:
+        json.dump(database, fp)
+
+
 @app.route('/')
 def home():
     return render_template('home.template.html')
@@ -58,11 +72,7 @@ def process_add_customer():
 @app.route('/customers/<int:customer_id>/edit')
 def show_edit_customer(customer_id):
     # 1. find the customer that we are supposed to edit
-    customer_to_edit = None
-    for each_customer in database:
-        if each_customer["id"] == customer_id:
-            customer_to_edit = each_customer
-            break
+    customer_to_edit = find_customer_by_id(customer_id)
 
     if customer_to_edit:
         return render_template('edit_customer.template.html',
@@ -100,11 +110,7 @@ def process_edit_customer(customer_id):
 
 @app.route('/customers/<int:customer_id>/delete')
 def show_delete_customer(customer_id):
-    customer_to_delete = None
-    for customer in database:
-        if customer['id'] == customer_id:
-            customer_to_delete = customer
-            break
+    customer_to_delete = find_customer_by_id(customer_id)
 
     if customer_to_delete:
         return render_template('confirm_to_delete_customer.template.html',
@@ -115,18 +121,11 @@ def show_delete_customer(customer_id):
 
 @app.route('/customers/<int:customer_id>/delete', methods=['POST'])
 def process_delete_customer(customer_id):
-    customer_to_delete = None
-    for customer in database:
-        if customer['id'] == customer_id:
-            customer_to_delete = customer
-            break
+    customer_to_delete = find_customer_by_id(customer_id)
 
     if customer_to_delete:
         database.remove(customer_to_delete)
-
-        with open('customers.json', 'w') as fp:
-            json.dump(database, fp)
-
+        save_database()
         return redirect(url_for('show_customers'))
     else:
         return f"The customer with the id of {customer_id} is not found"
