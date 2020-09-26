@@ -1,0 +1,16 @@
+{% extends 'base.template.html' %}
+
+{% block content %}
+{{customer}}
+<form method="POST">
+<div class="alert alert-danger">
+    <div>
+        Are you sure you want to delete the customer {{customer.first_name}}
+        {{customer.last_name}}?
+    </div>
+    <input type="submit" value="Yes, delete" class="btn btn-danger">
+    <a href="{{url_for('show_customers') }}" class="btn btn-success">No</a>
+</div>
+</form>
+
+{% endblock %}

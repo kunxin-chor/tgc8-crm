@@ -17,6 +17,7 @@
         <td>{{customer.email}}</td>
         <td>
             <a href="{{ url_for('show_edit_customer', customer_id=customer.id) }}" class="btn btn-primary btn-sm">Edit</a>
+            <a href="{{ url_for('show_delete_customer', customer_id=customer.id) }}" class="btn btn-danger btn-sm">Delete</a>
         </td>
     </tr>
     {% endfor %}
