@@ -1,0 +1,27 @@
+{% extends 'base.template.html' %}
+
+{% block content %}
+<h1>Edit Customer</h1>
+<form method="POST">
+    <div>
+        <label class="form-label">First Name</label>
+        <input type="text" name="first_name" class="form-control" value="{{customer.first_name}}"/>
+    </div>
+    <div>
+        <label class="form-label">Last Name</label>
+        <input type="text" name="last_name" class="form-control" value="{{customer.last_name}}"/>
+    </div>
+    <div>
+        <label class="form-label">Email</label>
+        <input type="text" name="email" class="form-control" value="{{customer.email}}"/>
+    </div>
+    <div>   
+        <label class="form-label">Send marketing material?</label>
+        <input type="checkbox" name="can_send" {% if customer.send_marketing_material%} 
+            checked 
+        {%endif%}
+        />
+    </div>
+    <input type="submit" value="Update Customer" class="btn btn-primary"/>
+</form>
+{% endblock %}

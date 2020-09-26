@@ -1,0 +1,24 @@
+{% extends 'base.template.html' %}
+
+{% block content %}
+<h1>Add Customer</h1>
+<form method="POST">
+    <div>
+        <label class="form-label">First Name</label>
+        <input type="text" name="first_name" class="form-control"/>
+    </div>
+    <div>
+        <label class="form-label">Last Name</label>
+        <input type="text" name="last_name" class="form-control"/>
+    </div>
+    <div>
+        <label class="form-label">Email</label>
+        <input type="text" name="email" class="form-control"/>
+    </div>
+    <div>   
+        <label class="form-label">Send marketing material?</label>
+        <input type="checkbox" name="can_send"/>
+    </div>
+    <input type="submit" value="Create Customer" class="btn btn-primary"/>
+</form>
+{% endblock %}
