@@ -5,23 +5,40 @@
 <form method="POST">
     <div>
         <label class="form-label">First Name</label>
-        <input type="text" name="first_name" class="form-control" value="{{customer.first_name}}"/>
+        <input type="text" name="first_name" 
+        class="form-control {%if 'first_name' in errors %} is-invalid {%endif%}" value="{{customer.first_name}}"/>
+        {%if 'first_name' in errors %}
+        <div class="invalid-feedback">
+            {{errors.first_name}}
+        </div>
+        {%endif%}
     </div>
     <div>
         <label class="form-label">Last Name</label>
-        <input type="text" name="last_name" class="form-control" value="{{customer.last_name}}"/>
+        <input type="text" name="last_name" class="form-control {%if 'last_name' in errors %}
+        is-invalid        
+        {%endif%}" 
+        value="{{customer.last_name}}"/>
+        {%if 'last_name' in errors %}
+        <div class="invalid-feedback">
+            {{errors.last_name}}
+        </div>
+        {%endif%}
     </div>
     <div>
         <label class="form-label">Email</label>
-        <input type="text" name="email" class="form-control" value="{{customer.email}}"/>
+        <input type="text" name="email" class="form-control {%if 'email' in errors %} is-invalid {%endif%}" 
+            value="{{customer.email}}"/>
+        {%if 'email' in errors %}
+        <div class="invalid-feedback">
+            {{errors.email}}
+        </div>
+        {%endif%}
     </div>
     <div>   
         <label class="form-label">Send marketing material?</label>
-        <input type="checkbox" name="can_send" {% if customer.send_marketing_material%} 
-            checked 
-        {%endif%}
-        />
+        <input type="checkbox" name="can_send" {% if 'can_send' in customer or customer.send_marketing_material %} checked {%endif%}/>
     </div>
-    <input type="submit" value="Update Customer" class="btn btn-primary"/>
+    <input type="submit" value="Create Customer" class="btn btn-primary"/>
 </form>
 {% endblock %}

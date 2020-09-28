@@ -37,7 +37,8 @@ def show_customers():
 
 @app.route('/customers/add')
 def show_add_customer():
-    return render_template('add_customer.template.html', old_values={})
+    return render_template('add_customer.template.html', old_values={},
+                           errors={})
 
 
 @app.route('/customers/add', methods=["POST"])
@@ -58,6 +59,9 @@ def process_add_customer():
 
     if not email:
         errors["email"] = "Please provide a valid email address"
+
+    if '@' not in email:
+        errors["email"] = "Your email is not properly formatted"
 
     # check if `can_send` checkbox is checked
     if 'can_send' in request.form:
@@ -84,10 +88,10 @@ def process_add_customer():
             f" {new_customer['last_name']} has been created successfully")
         return redirect(url_for('show_customers'))
     else:
-        for key, value in errors.items():
-            flash(value, "error")
 
-        return render_template('add_customer.template.html', old_values=request.form)
+        return render_template('add_customer.template.html',
+                               old_values=request.form,
+                               errors=errors)
 
 
 @app.route('/customers/<int:customer_id>/edit')
@@ -97,38 +101,54 @@ def show_edit_customer(customer_id):
 
     if customer_to_edit:
         return render_template('edit_customer.template.html',
-                               customer=customer_to_edit)
+                               customer=customer_to_edit, errors={})
     else:
         return f"The customer with the id of {customer_id} is not found"
 
 
 @app.route('/customers/<int:customer_id>/edit', methods=["POST"])
 def process_edit_customer(customer_id):
+
     customer_to_edit = None
     for each_customer in database:
         if each_customer["id"] == customer_id:
             customer_to_edit = each_customer
             break
 
+    errors = {}
+    if not request.form.get('first_name'):
+        errors["first_name"] = "Please provide a first name"
+
+    if not request.form.get('last_name'):
+        errors['last_name'] = "Please provide a last name"
+
+    if not request.form.get('email'):
+        errors['email'] = "Please provide an email address"
+
     if customer_to_edit:
-        customer_to_edit["first_name"] = request.form.get('first_name')
-        customer_to_edit["last_name"] = request.form.get('last_name')
-        customer_to_edit["email"] = request.form.get('email')
 
-        if 'can_send' in request.form:
-            print("send marketing material true")
-            customer_to_edit['send_marketing_material'] = True
+        if len(errors) == 0:
+            customer_to_edit["first_name"] = request.form.get('first_name')
+            customer_to_edit["last_name"] = request.form.get('last_name')
+            customer_to_edit["email"] = request.form.get('email')
+
+            if 'can_send' in request.form:
+                print("send marketing material true")
+                customer_to_edit['send_marketing_material'] = True
+            else:
+                print('send marketing material false')
+                customer_to_edit['send_marketing_material'] = False
+
+            with open('customers.json', 'w') as fp:
+                json.dump(database, fp)
+
+            flash(
+                f"The customer {customer_to_edit['first_name']}"
+                f" {customer_to_edit['last_name']} has been updated.")
+            return redirect(url_for('show_customers'))
         else:
-            print('send marketing material false')
-            customer_to_edit['send_marketing_material'] = False
-
-        with open('customers.json', 'w') as fp:
-            json.dump(database, fp)
-
-        flash(
-            f"The customer {customer_to_edit['first_name']}"
-            f" {customer_to_edit['last_name']} has been updated.")
-        return redirect(url_for('show_customers'))
+            return render_template('edit_customer.template.html',
+                                   customer=request.form, errors=errors)
     else:
         return f"The customer with the id {customer_id} does not exist"
 

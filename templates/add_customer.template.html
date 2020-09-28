@@ -5,15 +5,35 @@
 <form method="POST">
     <div>
         <label class="form-label">First Name</label>
-        <input type="text" name="first_name" class="form-control" value="{{old_values.first_name}}"/>
+        <input type="text" name="first_name" 
+        class="form-control {%if 'first_name' in errors %} is-invalid {%endif%}" value="{{old_values.first_name}}"/>
+        {%if 'first_name' in errors %}
+        <div class="invalid-feedback">
+            {{errors.first_name}}
+        </div>
+        {%endif%}
     </div>
     <div>
         <label class="form-label">Last Name</label>
-        <input type="text" name="last_name" class="form-control" value="{{old_values.last_name}}"/>
+        <input type="text" name="last_name" class="form-control {%if 'last_name' in errors %}
+        is-invalid        
+        {%endif%}" 
+        value="{{old_values.last_name}}"/>
+        {%if 'last_name' in errors %}
+        <div class="invalid-feedback">
+            {{errors.last_name}}
+        </div>
+        {%endif%}
     </div>
     <div>
         <label class="form-label">Email</label>
-        <input type="text" name="email" class="form-control" value="{{old_values.email}}"/>
+        <input type="text" name="email" class="form-control {%if 'email' in errors %} is-invalid {%endif%}" 
+            value="{{old_values.email}}"/>
+        {%if 'email' in errors %}
+        <div class="invalid-feedback">
+            {{errors.email}}
+        </div>
+        {%endif%}
     </div>
     <div>   
         <label class="form-label">Send marketing material?</label>
