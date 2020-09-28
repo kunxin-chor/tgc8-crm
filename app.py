@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 import json
 import random
 
 app = Flask(__name__)
+app.secret_key = b'6853-6789-5905$#)(%$x-57-605h)'
+
 database = {}
 with open('customers.json') as fp:
     database = json.load(fp)
@@ -35,7 +37,7 @@ def show_customers():
 
 @app.route('/customers/add')
 def show_add_customer():
-    return render_template('add_customer.template.html')
+    return render_template('add_customer.template.html', old_values={})
 
 
 @app.route('/customers/add', methods=["POST"])
@@ -44,8 +46,18 @@ def process_add_customer():
     last_name = request.form.get('last_name')
     email = request.form.get('email')
 
-    if first_name == "" or last_name == "" or email == "":
-        return redirect(url_for('show_add_customer'))
+    # use a dictionary to store the error messages
+    errors = {}
+
+    # check if the first_name is provided
+    if not first_name:
+        errors["first_name"] = "Please provide a valid first name"
+
+    if not last_name:
+        errors["last_name"] = "Please provide a valid last name"
+
+    if not email:
+        errors["email"] = "Please provide a valid email address"
 
     # check if `can_send` checkbox is checked
     if 'can_send' in request.form:
@@ -53,20 +65,29 @@ def process_add_customer():
     else:
         can_send = False
 
-    new_customer = {
-        'id': random.randint(1000, 9999),
-        'first_name': first_name,
-        'last_name': last_name,
-        'email': email,
-        'can_send': can_send
-    }
+    if len(errors) == 0:
+        new_customer = {
+            'id': random.randint(1000, 9999),
+            'first_name': first_name,
+            'last_name': last_name,
+            'email': email,
+            'can_send': can_send
+        }
 
-    database.append(new_customer)
+        database.append(new_customer)
 
-    with open('customers.json', 'w') as fp:
-        json.dump(database, fp)
+        with open('customers.json', 'w') as fp:
+            json.dump(database, fp)
 
-    return redirect(url_for('show_customers'))
+        flash(
+            f"The customer with the name {new_customer['first_name']}"
+            f" {new_customer['last_name']} has been created successfully")
+        return redirect(url_for('show_customers'))
+    else:
+        for key, value in errors.items():
+            flash(value, "error")
+
+        return render_template('add_customer.template.html', old_values=request.form)
 
 
 @app.route('/customers/<int:customer_id>/edit')
@@ -103,6 +124,10 @@ def process_edit_customer(customer_id):
 
         with open('customers.json', 'w') as fp:
             json.dump(database, fp)
+
+        flash(
+            f"The customer {customer_to_edit['first_name']}"
+            f" {customer_to_edit['last_name']} has been updated.")
         return redirect(url_for('show_customers'))
     else:
         return f"The customer with the id {customer_id} does not exist"
